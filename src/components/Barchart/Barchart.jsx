@@ -2,6 +2,8 @@ import React, { Component } from "react";
 import { Element } from "react-faux-dom";
 import * as d3 from "d3";
 import data from "./data.js";
+import Card from "../Cards/cardData";
+import "./BarChart.css";
 
 class Barchart extends Component {
   state = {
@@ -176,11 +178,9 @@ class Barchart extends Component {
 
   render() {
     return (
-      <div>
-        <div className="Barchart">
-          {this.state.data && this.drawChart()}
-        </div>
-        <div className="legend">{this.state.data && this.drawLegend()}</div>
+      <div className="center-chart">
+        {this.drawChart()}
+        <Card />
       </div>
     );
   }
