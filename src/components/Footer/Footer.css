@@ -2,7 +2,11 @@
   clear: both;
 }
 footer {
-  margin-top: auto;
+  position: fixed;
+  float: left;
+  bottom:0;
+  width: 100vw;
+
 }
 footer p,
 footer a {

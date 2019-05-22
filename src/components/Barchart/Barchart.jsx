@@ -1,12 +1,11 @@
 import React, { Component } from "react";
 import { Element } from "react-faux-dom";
 import * as d3 from "d3";
-import Card from "../Cards/cardData";
+import Card from "./Cards/cardData";
 import axios from "axios";
 import * as stats from "../../utils/stats";
-import "./BarChart.css";
-import "./styles.css";
-import SideBar from "./Sidebar";
+import "../Sidebar/Sidebar.css";
+import SideBar from "../Sidebar/Sidebar";
 
 class Barchart extends Component {
   state = {
@@ -60,7 +59,64 @@ class Barchart extends Component {
         "http://graduateportal-dev.tw7ahpynm7.us-east-2.elasticbeanstalk.com/api/graduates/data-visualization"
       )
       .then(resp => {
-        this.setState({ studentData: [...resp.data.data] });
+        let studentData = resp.data.data;
+        let studentDataSet = [
+          {
+            category: "Overall",
+            average: stats.avg(studentData),
+            display: this.state.overall
+          },
+          {
+            category: "Median",
+            average: stats.calculateMedian(
+              studentData.map(obj => stats.parseCurrency(obj.salarychange))
+            ),
+            display: this.state.median
+          },
+          {
+            category: "Multiple Classes",
+            average: stats.avg(
+              studentData.filter(obj => obj.numberofclasses !== "1")
+            ),
+            display: this.state.multiple
+          },
+          {
+            category: "Men",
+            average: stats.avg(
+              studentData.filter(obj => obj.gender === "Male")
+            ),
+            display: this.state.men
+          },
+          {
+            category: "POC",
+            average: stats.avg(
+              studentData.filter(obj => obj.demographic !== "W")
+            ),
+            display: this.state.poc
+          },
+          {
+            category: "Women",
+            average: stats.avg(
+              studentData.filter(obj => obj.gender === "Female")
+            ),
+            display: this.state.women
+          },
+          {
+            category: "Single Class",
+            average: stats.avg(
+              studentData.filter(obj => obj.numberofclasses === "1")
+            ),
+            display: this.state.single
+          },
+          {
+            category: "Veterans",
+            average: stats.avg(studentData.filter(obj => obj.veteran === "Y")),
+            display: this.state.veterans
+          }
+        ];
+
+        this.setState({ studentData: studentDataSet });
+        console.log(studentData);
       })
       .catch(error => this.setState({ hasError: true, error }));
   };
@@ -69,72 +125,73 @@ class Barchart extends Component {
     this.getLiveData();
   };
 
-  plot(chart, width, height) {
+  plot(chart, width, height, studentDataSet) {
     //console.log(this.state.studentData);
 
-    const studentDataSet = [
-      {
-        category: "Overall",
-        average: stats.avg(this.state.studentData),
-        display: this.state.overall
-      },
-      {
-        category: "Median",
-        average: stats.calculateMedian(
-          this.state.studentData.map(obj =>
-            stats.parseCurrency(obj.salarychange)
-          )
-        ),
-        display: this.state.median
-      },
-      {
-        category: "Multiple Classes",
-        average: stats.avg(
-          this.state.studentData.filter(obj => obj.numberofclasses !== "1")
-        ),
-        display: this.state.multiple
-      },
-      {
-        category: "Men",
-        average: stats.avg(
-          this.state.studentData.filter(obj => obj.gender === "Male")
-        ),
-        display: this.state.men
-      },
-      {
-        category: "POC",
-        average: stats.avg(
-          this.state.studentData.filter(obj => obj.demographic !== "W")
-        ),
-        display: this.state.poc
-      },
-      {
-        category: "Women",
-        average: stats.avg(
-          this.state.studentData.filter(obj => obj.gender === "Female")
-        ),
-        display: this.state.women
-      },
-      {
-        category: "Single Class",
-        average: stats.avg(
-          this.state.studentData.filter(obj => obj.numberofclasses === "1")
-        ),
-        display: this.state.single
-      },
-      {
-        category: "Veterans",
-        average: stats.avg(
-          this.state.studentData.filter(obj => obj.veteran === "Y")
-        ),
-        display: this.state.veterans
-      }
-    ];
-    //console.log(studentDataSet);
+    // const studentDataSet = [
+    //   {
+    //     category: "Overall",
+    //     average: stats.avg(this.state.studentData),
+    //     display: this.state.overall
+    //   },
+    //   {
+    //     category: "Median",
+    //     average: stats.calculateMedian(
+    //       this.state.studentData.map(obj =>
+    //         stats.parseCurrency(obj.salarychange)
+    //       )
+    //     ),
+    //     display: this.state.median
+    //   },
+    //   {
+    //     category: "Multiple Classes",
+    //     average: stats.avg(
+    //       this.state.studentData.filter(obj => obj.numberofclasses !== "1")
+    //     ),
+    //     display: this.state.multiple
+    //   },
+    //   {
+    //     category: "Men",
+    //     average: stats.avg(
+    //       this.state.studentData.filter(obj => obj.gender === "Male")
+    //     ),
+    //     display: this.state.men
+    //   },
+    //   {
+    //     category: "POC",
+    //     average: stats.avg(
+    //       this.state.studentData.filter(obj => obj.demographic !== "W")
+    //     ),
+    //     display: this.state.poc
+    //   },
+    //   {
+    //     category: "Women",
+    //     average: stats.avg(
+    //       this.state.studentData.filter(obj => obj.gender === "Female")
+    //     ),
+    //     display: this.state.women
+    //   },
+    //   {
+    //     category: "Single Class",
+    //     average: stats.avg(
+    //       this.state.studentData.filter(obj => obj.numberofclasses === "1")
+    //     ),
+    //     display: this.state.single
+    //   },
+    //   {
+    //     category: "Veterans",
+    //     average: stats.avg(
+    //       this.state.studentData.filter(obj => obj.veteran === "Y")
+    //     ),
+    //     display: this.state.veterans
+    //   }
+    // ];
+    // console.log(studentDataSet);
 
     //console.log(this.state.studentData);
     const xScale = d3
       .scaleBand()
+      .paddingInner(.05)
       .domain(
         studentDataSet
           .filter(function(el) {
@@ -174,16 +231,16 @@ class Barchart extends Component {
       .style("fill", (d, i) => colorScale(i));
 
     // chart
-    //   .selectAll('.bar-label')
+    //   .selectAll(".bar-label")
     //   .data(studentDataSet)
     //   .enter()
-    //   .append('text')
-    //   .classed('bar-label', true)
-    //   .attr('x', d => xScale(d.category) + xScale.bandwidth() / 2)
-    //   .attr('dx', 0)
-    //   .attr('y', d => yScale(d.average))
-    //   .attr('dy', -6)
-    //   .text(d => d.value);
+    //   .append("text")
+    //   .classed("bar-label", true)
+    //   .attr("x", d => xScale(d.category) + xScale.bandwidth() / 4)
+    //   .attr("dx", 0)
+    //   .attr("y", d => yScale(d.average))
+    //   .attr("dy", -6)
+    //   .text(d => d.average);
 
     const xAxis = d3.axisBottom().scale(xScale);
 
@@ -226,39 +283,7 @@ class Barchart extends Component {
       .text("Average Student Salary Increase");
   }
 
-  drawLegend() {
-    const height = 300;
-    const width = 300;
-
-    const elLegend = new Element("div");
-
-    const svg = d3
-      .select(elLegend)
-      .append("svg")
-      .attr("id", "legend")
-      .attr("width", width)
-      .attr("height", height);
-
-    const margin = {
-      top: 60,
-      bottom: 0,
-      left: 60,
-      right: 100
-    };
-
-    const legend = svg
-      .append("g")
-      .classed("display", true)
-      .attr("transform", `translate(${margin.right},${margin.top})`);
-
-    const legendWidth = width - margin.left - margin.right;
-    const legendHeight = height - margin.top - margin.bottom;
-    this.plot(legend, legendWidth, legendHeight);
-
-    return elLegend.toReact();
-  }
-
-  drawChart() {
+  drawChart(filteredData) {
     const width = 800;
     const height = 450;
 
@@ -284,7 +309,7 @@ class Barchart extends Component {
 
     const chartWidth = width - margin.left - margin.right;
     const chartHeight = height - margin.top - margin.bottom;
-    this.plot(chart, chartWidth, chartHeight);
+    this.plot(chart, chartWidth, chartHeight, filteredData);
 
     return el.toReact();
   }
@@ -307,7 +332,7 @@ class Barchart extends Component {
           updateParentVeterans={this.updateVeterans}
         />
         <div id="page-wrap" className="center-chart">
-          {this.state.studentData && this.drawChart()}
+          {this.state.studentData && this.drawChart(this.state.studentData)}
 
           <Card {...this.state} />
         </div>

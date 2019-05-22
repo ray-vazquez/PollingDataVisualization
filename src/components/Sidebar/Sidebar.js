@@ -6,8 +6,7 @@ class Sidebar extends Component {
 
   render() {
     return (
-      <div>
-        {console.log(this.props)}
+      <div className="burger-wrap">
         <Menu>
           <form>
             <input

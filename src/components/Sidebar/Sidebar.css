@@ -6,13 +6,14 @@ body {
 #Barchart {
   font-family: sans-serif;
 
+
   /* Give app full page to work with */
   height: 100vh;
 }
 
 #page-wrap {
   text-align: center;
-
+position:relative;
   /* Prevent sidebar from showing a scrollbar on page */
   overflow: auto;
 }
@@ -37,11 +38,16 @@ body {
 
 /* Position and sizing of burger button */
 .bm-burger-button {
-  position: fixed;
+  position: absolute;
   width: 36px;
   height: 30px;
   left: 36px;
   top: 120px;
+}
+
+.burger-wrap {
+  /* position: fixed; */
+  /* height: 100vh; */
 }
 
 /* Color/shape of burger icon bars */
@@ -65,6 +71,8 @@ body {
   background: #373a47;
   padding: 2.5em 1.5em 0;
   font-size: 1.15em;
+  position: fixed;
+  top:0;
 }
 
 /* Morph shape necessary with bubble or elastic */
@@ -80,4 +88,6 @@ body {
 /* Styling of overlay */
 .bm-overlay {
   background: rgba(0, 0, 0, 0.3);
+  position:fixed;
+  top:0;
 }

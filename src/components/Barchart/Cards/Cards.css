@@ -3,7 +3,9 @@
   background: radial-gradient(
     rgba(255, 255, 255, 1) 50%,
     rgba(216, 216, 216, 1) 165%
-  );
+    );
+    margin-bottom: 125px !important;
+    margin-top: 50px !important;
 }
 
 .card:hover {
